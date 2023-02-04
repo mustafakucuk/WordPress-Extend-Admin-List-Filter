@@ -138,7 +138,7 @@ function get_user_ajax()
 }
 ````
 
-### All options table
+### All options
 
 | Option       | Type      | Description                                                   | Default     | Required |
 | ------------ | --------- | ------------------------------------------------------------- | ----------- | -------- |
