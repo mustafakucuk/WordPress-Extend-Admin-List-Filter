@@ -1,0 +1,9 @@
+.ts-wrapper.single {
+  float: left;
+  margin: 0 10px 0 0;
+}
+
+.ts-control {
+  min-width: 200px;
+  padding: 5px 8px;
+}
