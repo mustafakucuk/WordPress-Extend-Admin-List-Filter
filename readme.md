@@ -14,6 +14,11 @@ This library allows you to add a filter to the admin list view.
 require_once( 'wp-extend-admin-list-filter/index.php' );
 ```
 
+## Images
+<img width="645" alt="Screenshot 2023-02-05 at 00 05 21" src="https://user-images.githubusercontent.com/7347594/216789574-35ebed6f-f9e9-4761-a508-042e40a56d77.png">
+
+<img width="646" alt="Screenshot 2023-02-05 at 00 06 37" src="https://user-images.githubusercontent.com/7347594/216789613-bc8358ae-de49-4f51-b2f8-1523083fb574.png">
+
 ## Usage
 
 ### Add a filter (Basic)
