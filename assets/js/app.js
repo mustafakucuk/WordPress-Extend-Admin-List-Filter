@@ -2,6 +2,12 @@
   $(document).ready(function () {
     const uiSelects = $(".wealf-select-ui");
 
+    const magicKeywordConvert = function (str, data) {
+      return str.replace(/{{\s*([a-z0-9_]+)\s*}}/gi, function (match, token) {
+        return data[token] || "";
+      });
+    };
+
     const ajaxRequest = function (action, data, success) {
       $.ajax({
         url: wealf.ajax_url,
@@ -22,8 +28,17 @@
       const callbackName = select.data("callback");
       const selectedValue = select.data("selected");
       let uiOptions = select.data("ui-options");
+
       uiOptions =
         typeof uiOptions === "string" ? JSON.parse(uiOptions) : uiOptions;
+
+      if (uiOptions.render?.odption) {
+        let renderOption = uiOptions.render.option;
+
+        uiOptions.render.option = function (data, escape) {
+          return "<div>" + renderOption + "</div>";
+        };
+      }
 
       const valueField = uiOptions.valueField;
 
@@ -54,7 +69,6 @@
           const self = this;
 
           if (!callbackName) {
-            callback();
             return;
           }
 
@@ -79,6 +93,21 @@
               }
             );
           }
+        },
+        render: {
+          option: function (data, escape) {
+            if (uiOptions?.render?.option) {
+              return (
+                "<div>" +
+                magicKeywordConvert(uiOptions.render.option, data) +
+                "</div>"
+              );
+            } else if (uiOptions?.labelField) {
+              return "<div>" + escape(data[uiOptions.labelField]) + "</div>";
+            } else {
+              return "<div>" + escape(data.text) + "</div>";
+            }
+          },
         },
       });
     });
