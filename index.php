@@ -44,8 +44,8 @@ class WordPress_Extend_Admin_List_Filter
      */
     public function init_hooks()
     {
-        add_action('restrict_manage_posts', [$this, 'render_filters']);
-        add_action('restrict_manage_users', [$this, 'render_filters']);
+        add_action('restrict_manage_posts', [$this, 'render_filters'], 10, 2);
+        add_action('restrict_manage_users', [$this, 'render_filters'], 10, 1);
         add_action('admin_enqueue_scripts', [$this, 'admin_enqueue_scripts']);
 
         add_filter('parse_query', [$this, 'parse_query']);
@@ -61,8 +61,8 @@ class WordPress_Extend_Admin_List_Filter
     {
         wp_enqueue_style('wealf-admin-tomselect', wealf_get_file('assets/css/tom-select.css'));
         wp_enqueue_style('wealf-admin-app', wealf_get_file('assets/css/app.css'));
-
         wp_enqueue_script('wealf-admin-tomselect', wealf_get_file('assets/js/tom-select.complete.min.js'), ['jquery'], false, true);
+
         wp_enqueue_script('wealf-admin-app', wealf_get_file('assets/js/app.js'), ['jquery'], false, true);
 
         wp_localize_script('wealf-admin-app', 'wealf', [
@@ -106,7 +106,7 @@ class WordPress_Extend_Admin_List_Filter
      * 
      * @return void
      */
-    public function render_filters()
+    public function render_filters($ctx)
     {
         global $typenow;
         global $pagenow;
@@ -116,11 +116,14 @@ class WordPress_Extend_Admin_List_Filter
         $filters = $this->get_filters($scope);
 
         foreach ($filters as $name => $args) {
-            if ($scope == 'users' || $typenow == $args['post_type']) {
+            if (($scope == 'users' && $ctx == 'top') || ($typenow == $args['post_type'])) {
                 $field = new Field($name, $args);
-
                 $field->render();
             }
+        }
+
+        if ($scope == 'users' && $ctx == 'top') {
+            submit_button(__('Filter'), null, $ctx, false);
         }
     }
 
@@ -168,9 +171,12 @@ class WordPress_Extend_Admin_List_Filter
 
                     foreach ($filter as $key => $value) {
                         $filter[$key] = $this->prepare_filter($key, $value, wealf_array_element($name, $_GET));
+                        if (isset($query->query_vars[$key])) {
+                            $query->query_vars[$key] = array_merge($query->query_vars[$key], $filter[$key]);
+                        } else {
+                            $query->query_vars[$key] = $filter[$key];
+                        }
                     }
-
-                    $query->query_vars = array_merge($query->query_vars, $filter);
                 }
             }
 
